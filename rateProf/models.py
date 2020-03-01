@@ -8,20 +8,21 @@ class Professor(models.Model):
 
 class Module(models.Model):
     class Semester(models.IntegerChoices):
-        FALL = 1
-        SPRING = 2
+        one = 1
+        two = 2
     
     semester = models.IntegerField(choices=Semester.choices)
     moduleCode = models.CharField(max_length = 3)
     name = models.CharField(max_length = 40)
     year = models.CharField(max_length = 4)
+    professor = models.ManyToManyField(Professor)
 
     def __str__(self):
         return '%s %s, semester: %d' % (self.moduleCode, self.year, self.semester)
 
-class Prof_Module(models.Model):
-    profID = models.ManyToManyField(Professor)
-    moduleID = models.ManyToManyField(Module)
+#class Prof_Module(models.Model):
+#   profID = models.ManyToManyField(Professor)
+#   moduleID = models.ManyToManyField(Module)
 
 
 class User(models.Model):
