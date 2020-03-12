@@ -1,29 +1,35 @@
 from django.db import models
 
 class Professor(models.Model):
+    
     fname = models.CharField(max_length=40)
     lname = models.CharField(max_length=40)
+    prof_id = models.CharField(max_length=3, primary_key=True, default='0')
+
+    
     def __str__(self):
         return self.fname + " " + self.lname
 
 class Module(models.Model):
-    class Semester(models.IntegerChoices):
-        one = 1
-        two = 2
-    
-    semester = models.IntegerField(choices=Semester.choices)
     moduleCode = models.CharField(max_length = 3)
     name = models.CharField(max_length = 40)
-    year = models.CharField(max_length = 4)
-    professor = models.ManyToManyField(Professor)
 
     def __str__(self):
-        return '%s %s, semester: %d' % (self.moduleCode, self.year, self.semester)
+        return self.name
 
-#class Prof_Module(models.Model):
-#   profID = models.ManyToManyField(Professor)
-#   moduleID = models.ManyToManyField(Module)
+class moduleInstance(models.Model):
+    class Semester(models.IntegerChoices):
+        One = 1
+        Two = 2
+    
+    semester = models.IntegerField(choices=Semester.choices)
+    year = models.CharField(max_length = 4)
+    professor = models.ManyToManyField(Professor)
+    module = models.ForeignKey('Module', on_delete = models.CASCADE)
 
+    def __str__(self):
+        return '%s %s, semester: %d' % (self.module.name, self.year, self.semester)
+    
 
 class User(models.Model):
     userName = models.CharField(max_length = 15, unique = True)
@@ -35,7 +41,7 @@ class User(models.Model):
 
 class Rating(models.Model):
     userID = models.ForeignKey('User', on_delete=models.CASCADE)
-    moduleID = models.ForeignKey('Module', on_delete=models.CASCADE)
+    moduleID = models.ForeignKey('moduleInstance', on_delete=models.CASCADE)
     profID = models.ForeignKey('Professor', on_delete=models.CASCADE)
     rating = models.IntegerField()
 

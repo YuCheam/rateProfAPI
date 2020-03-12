@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/list/', views.List, name='list'),
     path('api/view/', views.View, name='view'),
+    path('api/average/', views.Average, name='average'),
 ]
