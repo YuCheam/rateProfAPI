@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Module, Professor, Rating
 import json
+from decimal import *
 
 def List(request):
     #get list of modules from the database
@@ -39,7 +40,9 @@ def View(request):
         for rate in p.rating_set.all():
             rating += rate.rating
 
-        rating = round(rating/length)
+        rating = Decimal(rating/length).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+        rating = int(rating)
+        
         name = p.fname + ' ' + p.lname
         item = {'Name' : name, 'Rating' : rating}
         retList.append(item)
