@@ -22,4 +22,8 @@ urlpatterns = [
     path('api/list/', views.List, name='list'),
     path('api/view/', views.View, name='view'),
     path('api/average/', views.Average, name='average'),
+    path('api/register/', views.Register, name='register'),
+    path('api/login/', views.Login, name='login'),
+    path('api/logout/', views.Logout, name='logout'),
+    path('api/rate/', views.Rate, name='rate'),
 ]
