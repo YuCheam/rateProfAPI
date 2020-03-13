@@ -5,6 +5,7 @@ import json
 from decimal import *
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
@@ -74,12 +75,17 @@ def Average(request):
             moduleID = v
         else:
             http_response = HttpResponse('ERROR: Incorrect Parameter Name')
-        http_response.status_code = 400
-        return http_response
+            http_response.status_code = 400
+            return http_response
 
     # Get professor
-    # TODO write error
-    prof_obj = Professor.objects.get(prof_id=profID)
+    try: 
+        prof_obj = Professor.objects.get(prof_id=profID)
+    except ObjectDoesNotExist:
+        http_response = HttpResponse('ERROR: professor does not exist for professor ID: {}'.format(profID))
+        http_response.status_code = 400
+        return http_response
+    
     prof_rating = prof_obj.rating_set.filter(module__module__moduleCode = moduleID)
 
     # Calculating rating
@@ -92,7 +98,13 @@ def Average(request):
         rating = Decimal(rating/length).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
         rating = int(rating)
 
-    moduleName = Module.objects.get(moduleCode = moduleID).name
+    try: 
+        moduleName = Module.objects.get(moduleCode = moduleID).name
+    except ObjectDoesNotExist:
+        http_response = HttpResponse('ERROR: Module instance does not exists for module code: {}'.format(moduleID))
+        http_response.status_code = 400
+        return http_response
+    
     name = prof_obj.fname + ' ' + prof_obj.lname
     payload = {'name': name, 'profID': profID, 'module': moduleName, 'moduleCode': moduleID, 'rating': rating}
 
@@ -166,8 +178,8 @@ def Login(request):
         login(request, user)
         # backend authenticated
     else:
-        http_response = HttpResponse('ERROR: invalid login')
-        http_response.status_code = 400
+        http_response = HttpResponse('ERROR: invalid username or password')
+        http_response.status_code = 403
         return http_response
 
 
@@ -213,10 +225,15 @@ def Rate(request):
             print('error')
 
     ## Add object to db
-    m = moduleInstance.objects.get(semester=semester, year=year,
+    try: 
+        m = moduleInstance.objects.get(semester=semester, year=year,
                                    module__moduleCode=module_code,
                                    professor__prof_id=prof_id)
-    p = Professor.objects.get(prof_id = prof_id)
+        p = Professor.objects.get(prof_id = prof_id)
+    except ObjectDoesNotExist:
+        http_response = HttpResponse('ERROR: Module instance or prof does not exist')
+        http_response.status_code = 400
+        return http_response
 
     try:
         user = Rating.objects.create(module=m, rating=rating, profID = p)
