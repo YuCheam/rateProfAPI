@@ -25,7 +25,7 @@ SECRET_KEY = 'io7_la=!vhh#3h9$^=f6ryypj9i0(_c-@k+vc1o3p*e1s#5i+l'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver', 'sc19kyac.pythonanywhere.com']
 
 
 # Application definition
@@ -117,5 +117,5 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-
+STATIC_ROOT = "/home/sc19kyac/rateProf_site/static"
 STATIC_URL = '/static/'
